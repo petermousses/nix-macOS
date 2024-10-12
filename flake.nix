@@ -35,6 +35,7 @@
 
           # Other CLI tools
           pkgs.yt-dlp
+          pkgs.neofetch
           # pkgs.ffmpeg
           # pkgs.wget
           # pkgs.curl
@@ -63,15 +64,23 @@
           "the-unarchiver"
           "google-chrome"
           # "spotify"
+          "signal"
+          "font-monocraft"
+          "avibrazil-rdm"
+          "unnaturalscrollwheels"
+          "utm"
+          "vlc"
+          "visual-studio-code"
+          "aldente"
         ];
         masApps = {
-          "Tailscale" = "1475387142"
+          "Tailscale" = "1475387142";
         };
         onActivation = {
           # cleanup = "zap";
           autoUpdate = true;
           upgrade = true;
-        }
+        };
       };
 
       # Discover settings here: https://daiderd.com/nix-darwin/manual/index.html
