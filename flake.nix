@@ -85,10 +85,10 @@
         ];
         masApps = {
           # "Tailscale" = "1475387142";
-          "MicrosoftOneNote" = "784801555";
-          "MicrosoftWord" = "462054704";
-          "MicrosoftExcel" = "462058435";
-          "MicrosoftPowerPoint" = "462062816";
+          "MicrosoftOneNote" = 784801555;
+          "MicrosoftWord" = 462054704;
+          "MicrosoftExcel" = 462058435;
+          "MicrosoftPowerPoint" = 462062816;
           # "WindowsAppAKARemoteDesktop" = "1295203466";
           # "Xcode" = "497799835";
           # "DevCleanerXcode" = "1388020431";
