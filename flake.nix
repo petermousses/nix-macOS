@@ -28,15 +28,21 @@
 
           # Development tools
           pkgs.git
-          pkgs.qemu
-          pkgs.gradle
+          pkgs.openssh
+          pkgs.libmamba
           # pkgs.libgcc
+          pkgs.gradle
           pkgs.jdk
+          pkgs.rustup
+          pkgs.qemu
+          pkgs.docker
+          pkgs.docker-compose
+          # pkgs.kubectl
 
           # Other CLI tools
           pkgs.yt-dlp
           pkgs.neofetch
-          # pkgs.ffmpeg
+          pkgs.ffmpeg
           # pkgs.wget
           # pkgs.curl
           # pkgs.ocaml
@@ -44,7 +50,7 @@
           # GUI applications
           pkgs.obsidian
           pkgs.librewolf
-          pkgs.bitwarden-cli
+          # pkgs.bitwarden-cli
           pkgs.spotify
 
         ];
@@ -60,7 +66,7 @@
         ];
         casks = [
           "bitwarden"
-          # "librewolf"
+          # "librewolf" # how to use --no-quarantine?
           "the-unarchiver"
           "google-chrome"
           # "spotify"
@@ -100,8 +106,48 @@
       system.defaults = {
         ".GlobalPreferences"."com.apple.sound.beep.sound" = "/System/Library/Sounds/Blow.aiff"; # This should be breeze but the names don't match with the settings app
         # ActivityMonitor.IconType = 5;
-        finder.FXPreferredViewStyle = "clmv"; # Column view
         loginwindow.GuestEnabled = false;
+        menuExtraClock = {
+          ShowSeconds = true;
+          ShowDayOfWeek = true;
+          ShowDayOfMonth = true;
+          ShowDate = 1;
+          ShowAMPM = true;
+        };
+        finder = {
+          FXPreferredViewStyle = "clmv"; # Column view
+          _FXSortFoldersFirst = true;
+          AppleShowAllFiles = true;
+          AppleShowAllExtensions = true;
+          FXDefaultSearchScope = "SCcf"; # Search current folder
+          QuitMenuItem = false;
+          ShowPathbar = false;
+          ShowStatusBar = true;
+          # NewWindowTarget = "PfHm";
+        };
+        loginwindow.LoginwindowText = "If lost contact peter.mousses@icloud.com";
+        magicmouse.MouseButtonMode = "TwoButton";
+        # screencapture.disable-shadow = true;
+        trackpad = {
+          ActuationStrength = 0;
+          FirstClickThreshold = 0;
+          TrackpadRightClick = true;
+        };
+        WindowManager.EnableStandardClickToShowDesktop = false;
+        NSGlobalDomain = {
+          "com.apple.sound.beep.feedback" = 1;
+          "com.apple.trackpad.forceClick" = true;
+          AppleShowScrollBars = "Always";
+          NSAutomaticSpellingCorrectionEnabled = false;
+          NSAutomaticCapitalizationEnabled = false;
+          NSAutomaticPeriodSubstitutionEnabled = false;
+          NSAutomaticQuoteSubstitutionEnabled = false;
+          NSAutomaticDashSubstitutionEnable = false;
+          NSAutomaticInlinePredictionEnabled = false;
+          KeyRepeat = 6;
+          InitialKeyRepeat = 25;
+          # NSDocumentSaveNewDocumentsToCloud = false;
+        };
         dock = {
           orientation = "left";
           magnification = true;
