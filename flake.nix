@@ -184,10 +184,10 @@
           ];
 
           # Hot Corners. Options: https://mynixos.com/nix-darwin/option/system.defaults.dock.wvous-bl-corner
-          wvous-tl-corner = "5";  # Screen Saver
-          wvous-tr-corner = "14";  # Quick Note
-          wvous-bl-corner = "11";  # Launchpad
-          wvous-br-corner = "4";  # Desktop
+          wvous-tl-corner = 5;  # Screen Saver
+          wvous-tr-corner = 14;  # Quick Note
+          wvous-bl-corner = 11;  # Launchpad
+          wvous-br-corner = 4;  # Desktop
         };
       };
 
