@@ -49,7 +49,7 @@
 
           # GUI applications
           pkgs.obsidian
-          pkgs.librewolf
+          # pkgs.librewolf # no aarch64 support
           pkgs.google-chrome
           # pkgs.bitwarden-desktop # no aarch64 support. Rosseta?
           # pkgs.bitwarden-cli
@@ -69,7 +69,7 @@
         ];
         casks = [
           "bitwarden"
-          # "librewolf" # how to use --no-quarantine?
+          "librewolf" # how to use --no-quarantine?
           "the-unarchiver"
           # "google-chrome"
           # "spotify"
@@ -146,7 +146,7 @@
           NSAutomaticCapitalizationEnabled = false;
           NSAutomaticPeriodSubstitutionEnabled = false;
           NSAutomaticQuoteSubstitutionEnabled = false;
-          NSAutomaticDashSubstitutionEnable = false;
+          # NSAutomaticDashSubstitutionEnable = false;
           NSAutomaticInlinePredictionEnabled = false;
           KeyRepeat = 6;
           InitialKeyRepeat = 25;
@@ -164,7 +164,7 @@
             "/System/Applications/Mission Control.app"
             "/System/Applications/Launchpad.app"
 
-            "${pkgs.librewolf}/Applications/Librewolf.app"
+            "/Applications/Librewolf.app"
             "${pkgs.google-chrome}/Applications/Google Chrome.app"
 
             "/System/Applications/Calendar.app"
