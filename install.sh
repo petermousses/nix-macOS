@@ -15,5 +15,4 @@ nix-build https://github.com/LnL7/nix-darwin/archive/master.tar.gz -A installer
 nix flake init -t nix-darwin --extra-experimental-features "nix-command flakes"
 sed -i '' "s/simple/$(scutil --get LocalHostName)/" flake.nix
 
-wd=$(pwd)
-nix-shell run nix-darwin --extra-experimental-features "nix-command flakes" -- switch --flake .#$(scutil --get LocalHostName)
+nix run nix-darwin --extra-experimental-features "nix-command flakes" -- switch --flake .#$(scutil --get LocalHostName)
