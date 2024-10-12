@@ -164,8 +164,8 @@
             "/System/Applications/Mission Control.app"
             "/System/Applications/Launchpad.app"
 
-            "/Applications/Librewolf.app"
-            "/Applications/Google Chrome.app"
+            "${pkgs.librewolf}/Applications/Librewolf.app"
+            "${pkgs.google-chrome}/Applications/Google Chrome.app"
 
             "/System/Applications/Calendar.app"
             "/System/Applications/Mail.app"
@@ -176,7 +176,7 @@
 
             "/System/Applications/Reminders.app"
             "/System/Applications/Preview.app"
-            "/Applications/Spotify.app"
+            "${pkgs.spotify}/Applications/Spotify.app"
             "/System/Applications/System Settings.app"
           ];
           persistent-others = [
