@@ -6,9 +6,17 @@
     nix-darwin.url = "github:LnL7/nix-darwin";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
     nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew";
+    homebrew-core = {
+      url = "github:homebrew/homebrew-core";
+      flake = true;
+    };
+    homebrew-cask = {
+      url = "github:homebrew/homebrew-cask";
+      flake = true;
+    };
   };
 
-  outputs = inputs@{ self, nix-darwin, nixpkgs, nix-homebrew }:
+  outputs = inputs@{ self, nix-darwin, nixpkgs, nix-homebrew, homebrew-core, homebrew-cask }:
   let
     configuration = { pkgs, config, ... }: {
 
@@ -62,6 +70,16 @@
 
       homebrew = {
         enable = true;
+        user = "petermousses";
+        # Optional: Declarative tap management
+        taps = {
+          "homebrew/homebrew-core" = homebrew-core;
+          "homebrew/homebrew-cask" = homebrew-cask;
+        };
+
+        # Optional: Enable fully-declarative tap management
+        # With mutableTaps disabled, taps can no longer be added imperatively with `brew tap`.
+        mutableTaps = false;
         brews = [
           "mas"
           # "rust"
@@ -72,7 +90,7 @@
           "librewolf" # how to use --no-quarantine?
           "the-unarchiver"
           # "google-chrome"
-          # "spotify"
+          "spotify"
           "signal"
           "font-monocraft"
           "avibrazil-rdm"
@@ -97,7 +115,7 @@
           # "CrystalFetchISO" = "6454431289";
         };
         onActivation = {
-          # cleanup = "zap";
+          cleanup = "zap";
           autoUpdate = true;
           upgrade = true;
         };
@@ -105,7 +123,10 @@
 
       # Discover settings here: https://daiderd.com/nix-darwin/manual/index.html
       # and here: https://mynixos.com/nix-darwin/options
-      system.keyboard.remapCapsLockToEscape = true;
+      system.keyboard = {
+        enableKeyMapping = true;
+        remapCapsLockToEscape = true;
+      };
       system.defaults = {
         ".GlobalPreferences"."com.apple.sound.beep.sound" = "/System/Library/Sounds/Blow.aiff"; # This should be breeze but the names don't match with the settings app
         # ActivityMonitor.IconType = 5;
@@ -176,11 +197,11 @@
 
             "/System/Applications/Reminders.app"
             "/System/Applications/Preview.app"
-            "${pkgs.spotify}/Applications/Spotify.app"
+            "/Applications/Spotify.app"
             "/System/Applications/System Settings.app"
           ];
           persistent-others = [
-            "~/Downloads"
+            "/Users/petermousses/Downloads"
           ];
 
           # Hot Corners. Options: https://mynixos.com/nix-darwin/option/system.defaults.dock.wvous-bl-corner
