@@ -76,6 +76,16 @@
         ];
         masApps = {
           "Tailscale" = "1475387142";
+          "MicrosoftOneNote" = "784801555";
+          "MicrosoftWord" = "462054704";
+          "MicrosoftExcel" = "462058435";
+          "MicrosoftPowerPoint" = "462062816";
+          # "WindowsAppAKARemoteDesktop" = "1295203466";
+          # "Xcode" = "497799835";
+          # "DevCleanerXcode" = "1388020431";
+          # "Notability" = "360593530";
+          # "KindleClassic" = "405399194";
+          # "CrystalFetchISO" = "6454431289";
         };
         onActivation = {
           # cleanup = "zap";
@@ -92,8 +102,8 @@
         dock = {
           largesize = 60;
           persistent-apps = [
-            "/System/Applications/Finder"
-            "/System/Applications/Activity Monitor"
+            "/System/Library/CoreServices/Finder"
+            "com.apple.ActivityMonitor"
             "/System/Applications/Mission Control"
             "/System/Applications/Launchpad"
             "/Applications/Librewolf.app"
@@ -104,14 +114,11 @@
             "/System/Applications/Utilities/Terminal.app"
             "com.apple.terminal"
             "/Applications/Visual Studio Code.app"
-
-            "com.apple.reminders"
-            "com.apple.preview"
+            "/Applications/Android Studio.app"
+            "/System/Applications/Reminders"
+            "/System/Applications/Preview"
             "/Applications/Spotify.app"
             "/System/Applications/System Preferences.app"
-
-            "com.apple.notes"
-            "com.apple.Music"
           ];
         };
       };
