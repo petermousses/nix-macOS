@@ -138,6 +138,7 @@
         };
         WindowManager.EnableStandardClickToShowDesktop = false;
         NSGlobalDomain = {
+          AppleInterfaceStyle = "Dark";
           "com.apple.sound.beep.feedback" = 1;
           "com.apple.trackpad.forceClick" = true;
           AppleShowScrollBars = "Always";
