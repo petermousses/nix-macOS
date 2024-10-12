@@ -53,7 +53,7 @@
           pkgs.google-chrome
           # pkgs.bitwarden-desktop # no aarch64 support. Rosseta?
           # pkgs.bitwarden-cli
-          pkgs.spotify
+          # pkgs.spotify
           pkgs.tailscale
         ];
       
