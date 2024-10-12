@@ -43,7 +43,7 @@
 
           # GUI applications
           pkgs.obsidian
-          # pkgs.librewolf
+          pkgs.librewolf
           pkgs.bitwarden-cli
           pkgs.spotify
 
@@ -60,7 +60,7 @@
         ];
         casks = [
           "bitwarden"
-          "librewolf"
+          # "librewolf"
           "the-unarchiver"
           "google-chrome"
           # "spotify"
@@ -72,6 +72,7 @@
           "vlc"
           "visual-studio-code"
           "aldente"
+          "zoom"
         ];
         masApps = {
           "Tailscale" = "1475387142";
@@ -84,8 +85,35 @@
       };
 
       # Discover settings here: https://daiderd.com/nix-darwin/manual/index.html
+      # and here: https://mynixos.com/nix-darwin/options
+      system.keyboard.remapCapsLockToEscape = true;
       system.defaults = {
+        # ActivityMonitor.IconType = 5;
+        dock = {
+          largesize = 60;
+          persistent-apps = [
+            "/System/Applications/Finder"
+            "/System/Applications/Activity Monitor"
+            "/System/Applications/Mission Control"
+            "/System/Applications/Launchpad"
+            "/Applications/Librewolf.app"
+            "/Applications/Google Chrome.app"
 
+            "/System/Applications/Calendar"
+            "/System/Applications/Mail"
+            "/System/Applications/Utilities/Terminal.app"
+            "com.apple.terminal"
+            "/Applications/Visual Studio Code.app"
+
+            "com.apple.reminders"
+            "com.apple.preview"
+            "/Applications/Spotify.app"
+            "/System/Applications/System Preferences.app"
+
+            "com.apple.notes"
+            "com.apple.Music"
+          ];
+        };
       };
 
       # Source: https://gist.github.com/elliottminns/211ef645ebd484eb9a5228570bb60ec3
