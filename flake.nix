@@ -31,6 +31,7 @@
           pkgs.qemu
           pkgs.gradle
           # pkgs.libgcc
+          pkgs.jdk
 
           # Other CLI tools
           pkgs.yt-dlp
@@ -43,6 +44,7 @@
           pkgs.obsidian
           # pkgs.librewolf
           pkgs.bitwarden-cli
+          pkgs.spotify
 
         ];
       
@@ -53,11 +55,14 @@
         enable = true;
         brews = [
           "mas"
+          "rust"
         ];
         casks = [
           "bitwarden"
           "librewolf"
           "the-unarchiver"
+          "google-chrome"
+          # "spotify"
         ];
         masApps = {
           "Tailscale" = "1475387142"
@@ -67,6 +72,11 @@
           autoUpdate = true;
           upgrade = true;
         }
+      };
+
+      # Discover settings here: https://daiderd.com/nix-darwin/manual/index.html
+      system.defaults = {
+
       };
 
       # Source: https://gist.github.com/elliottminns/211ef645ebd484eb9a5228570bb60ec3
