@@ -62,7 +62,11 @@
         masApps = {
           "Tailscale" = "1475387142"
         };
-        # onActivation.cleanup = "zap";
+        onActivation = {
+          # cleanup = "zap";
+          autoUpdate = true;
+          upgrade = true;
+        }
       }
 
       # Source: https://gist.github.com/elliottminns/211ef645ebd484eb9a5228570bb60ec3
