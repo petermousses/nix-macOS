@@ -62,7 +62,8 @@
         enable = true;
         brews = [
           "mas"
-          "rust"
+          # "rust"
+          "cmatrix"
         ];
         casks = [
           "bitwarden"
