@@ -98,26 +98,46 @@
       # and here: https://mynixos.com/nix-darwin/options
       system.keyboard.remapCapsLockToEscape = true;
       system.defaults = {
+        ".GlobalPreferences"."com.apple.sound.beep.sound" = "/System/Library/Sounds/Blow.aiff"; # This should be breeze but the names don't match with the settings app
         # ActivityMonitor.IconType = 5;
+        finder.FXPreferredViewStyle = "clmv"; # Column view
+        loginwindow.GuestEnabled = false;
         dock = {
-          largesize = 60;
+          orientation = "left";
+          magnification = true;
+          # largesize = 60;
+          showhidden = true;
+          show-recents = false;
           persistent-apps = [
             # "/System/Library/CoreServices/Finder.app"
             "/System/Applications/Utilities/Activity Monitor.app"
             "/System/Applications/Mission Control.app"
             "/System/Applications/Launchpad.app"
+
             "/Applications/Librewolf.app"
             "/Applications/Google Chrome.app"
+
             "/System/Applications/Calendar.app"
             "/System/Applications/Mail.app"
+
             "/System/Applications/Utilities/Terminal.app"
             "/Applications/Visual Studio Code.app"
             "/Applications/Android Studio.app"
+
             "/System/Applications/Reminders.app"
             "/System/Applications/Preview.app"
             "/Applications/Spotify.app"
             "/System/Applications/System Settings.app"
           ];
+          persistent-others = [
+            "~/Downloads"
+          ];
+
+          # Hot Corners. Options: https://mynixos.com/nix-darwin/option/system.defaults.dock.wvous-bl-corner
+          wvous-tl-corner = "5";  # Screen Saver
+          wvous-tr-corner = "14";  # Quick Note
+          wvous-bl-corner = "11";  # Launchpad
+          wvous-br-corner = "4";  # Desktop
         };
       };
 
