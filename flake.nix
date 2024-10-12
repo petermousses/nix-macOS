@@ -102,23 +102,21 @@
         dock = {
           largesize = 60;
           persistent-apps = [
-            "/System/Library/CoreServices/Finder"
-            "com.apple.ActivityMonitor"
-            "/System/Applications/Mission Control"
-            "/System/Applications/Launchpad"
+            # "/System/Library/CoreServices/Finder.app"
+            "/System/Applications/Utilities/Activity Monitor.app"
+            "/System/Applications/Mission Control.app"
+            "/System/Applications/Launchpad.app"
             "/Applications/Librewolf.app"
             "/Applications/Google Chrome.app"
-
-            "/System/Applications/Calendar"
-            "/System/Applications/Mail"
+            "/System/Applications/Calendar.app"
+            "/System/Applications/Mail.app"
             "/System/Applications/Utilities/Terminal.app"
-            "com.apple.terminal"
             "/Applications/Visual Studio Code.app"
             "/Applications/Android Studio.app"
-            "/System/Applications/Reminders"
-            "/System/Applications/Preview"
+            "/System/Applications/Reminders.app"
+            "/System/Applications/Preview.app"
             "/Applications/Spotify.app"
-            "/System/Applications/System Preferences.app"
+            "/System/Applications/System Settings.app"
           ];
         };
       };
