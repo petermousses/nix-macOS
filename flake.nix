@@ -50,9 +50,11 @@
           # GUI applications
           pkgs.obsidian
           pkgs.librewolf
+          pkgs.google-chrome
+          # pkgs.bitwarden-desktop # no aarch64 support. Rosseta?
           # pkgs.bitwarden-cli
           pkgs.spotify
-
+          pkgs.tailscale
         ];
       
       # fonts.packages = [
@@ -69,7 +71,7 @@
           "bitwarden"
           # "librewolf" # how to use --no-quarantine?
           "the-unarchiver"
-          "google-chrome"
+          # "google-chrome"
           # "spotify"
           "signal"
           "font-monocraft"
@@ -82,7 +84,7 @@
           "zoom"
         ];
         masApps = {
-          "Tailscale" = "1475387142";
+          # "Tailscale" = "1475387142";
           "MicrosoftOneNote" = "784801555";
           "MicrosoftWord" = "462054704";
           "MicrosoftExcel" = "462058435";
