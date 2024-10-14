@@ -3,19 +3,22 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+
     nix-darwin.url = "github:LnL7/nix-darwin";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
-    nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew";
+
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
-    # homebrew-core = {
-    #   url = "github:homebrew/homebrew-core";
-    #   flake = false;
-    # };
-    # homebrew-cask = {
-    #   url = "github:homebrew/homebrew-cask";
-    #   flake = false;
-    # };
+
+    nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew";
+    homebrew-core = {
+      url = "github:homebrew/homebrew-core";
+      flake = false;
+    };
+    homebrew-cask = {
+      url = "github:homebrew/homebrew-cask";
+      flake = false;
+    };
   };
 
   outputs = inputs:
@@ -28,10 +31,10 @@
       # environment.shells = [ pkgs.bash pkgs.zsh ];
       # environment.loginshell = pkgs.zsh;
       # nix.extraOptions = ''
-      #   experimental-features = nix-command flakes 
+      #   experimental-features = nix-command flakes
       # '';
 
-      
+
 
       # Auto upgrade nix package and the daemon service.
       services.nix-daemon.enable = true;
@@ -55,7 +58,7 @@
       nixpkgs.hostPlatform = "aarch64-darwin";
     };
 
-    packagesConfiguration = { pkgs, config, ...}: {
+    systemPackagesConfiguration = { pkgs, config, ...}: {
       nixpkgs.config = {
         allowUnfree = true;
       };
@@ -104,7 +107,7 @@
         # pkgs.spotify
         pkgs.tailscale
       ];
-      
+
       # fonts = {
       #   fontDir.enable = false;
       #   # "monocraft" = pkgs.fonts.monocraft;
@@ -122,47 +125,66 @@
       #     })
       #   ];
       # };
+    };
 
+    homebrewConfiguration = { pkgs, config, nix-homebrew, ...}: {
       # https://github.com/zhaofengli/nix-homebrew
-      homebrew = {
-        brews = [
-          "mas"
-        ];
-        casks = [
-          "bitwarden"
-          "librewolf" # how to use --no-quarantine?
-          "the-unarchiver"
-          # "google-chrome"
-          "spotify"
-          "signal"
-          "font-monocraft"
-          "avibrazil-rdm"
-          "unnaturalscrollwheels"
-          "utm"
-          "vlc"
-          "visual-studio-code"
-          "aldente"
-          "zoom"
-        ];
-        masApps = {
-          # "Tailscale" = "1475387142";
-          "MicrosoftOneNote" = 784801555;
-          "MicrosoftWord" = 462054704;
-          "MicrosoftExcel" = 462058435;
-          "MicrosoftPowerPoint" = 462062816;
-          # "WindowsAppAKARemoteDesktop" = "1295203466";
-          # "Xcode" = "497799835";
-          # "DevCleanerXcode" = "1388020431";
-          # "Notability" = "360593530";
-          # "KindleClassic" = "405399194";
-          # "CrystalFetchISO" = "6454431289";
+      nix-homebrew.darwinModules.nix-homebrew {
+        nix-homebrew = {
+          # Your nix-homebrew configuration
+          enable = false;
+          homebrewPrefix = "/opt/homebrew";
+          user = "${userName}";
+          enableRosetta = true;
+          autoMigrate = true;
+          brews = [
+            "mas"
+          ];
+          casks = [
+            "bitwarden"
+            "librewolf" # how to use --no-quarantine?
+            "the-unarchiver"
+            # "google-chrome"
+            "spotify"
+            "signal"
+            "font-monocraft"
+            "avibrazil-rdm"
+            "unnaturalscrollwheels"
+            "utm"
+            "vlc"
+            "visual-studio-code"
+            "aldente"
+            "zoom"
+          ];
+          masApps = {
+            # "Tailscale" = "1475387142";
+            "MicrosoftOneNote" = 784801555;
+            "MicrosoftWord" = 462054704;
+            "MicrosoftExcel" = 462058435;
+            "MicrosoftPowerPoint" = 462062816;
+            # "WindowsAppAKARemoteDesktop" = "1295203466";
+            # "Xcode" = "497799835";
+            # "DevCleanerXcode" = "1388020431";
+            # "Notability" = "360593530";
+            # "KindleClassic" = "405399194";
+            # "CrystalFetchISO" = "6454431289";
+          };
+          onActivation = {
+            cleanup = "zap";
+            autoUpdate = true;
+            upgrade = true;
+          };
+          # Optional: Declarative tap management
+          # taps = {
+          #   "homebrew/homebrew-core" = homebrew-core;
+          #   "homebrew/homebrew-cask" = homebrew-cask;
+          # };
+
+          # Optional: Enable fully-declarative tap management
+          # With mutableTaps disabled, taps can no longer be added imperatively with `brew tap`.
+          # mutableTaps = false;
         };
-        onActivation = {
-          cleanup = "zap";
-          autoUpdate = true;
-          upgrade = true;
-        };
-      };
+      }
     };
 
     systemConfiguration = { pkgs, config, ... }: {
@@ -286,7 +308,7 @@
             ${pkgs.mkalias}/bin/mkalias "$src" "/Applications/Nix Apps/$app_name"
           done
         '';
-      
+
       system.activationScripts.setScreensaver.text = let
       in
         pkgs.lib.mkForce ''
@@ -309,31 +331,15 @@
     # $ darwin-rebuild build --flake .#PeterBook-Air
     darwinConfigurations."${hostName}" = inputs.nix-darwin.lib.darwinSystem {
       # system = "aarch64-darwin";
-      # pkgs = import inputs.nixpkgs { 
+      # pkgs = import inputs.nixpkgs {
       #   # inherit inputs;
       #   system = "aarch64-darwin";
       # };
-      modules = [ 
+      modules = [
         generalConfiguration
-        packagesConfiguration
+        systemPackagesConfiguration
+        homebrewConfiguration
         systemConfiguration
-        inputs.nix-homebrew.darwinModules.nix-homebrew {
-          nix-homebrew = {
-            enable = false;
-            enableRosetta = true;
-            user = "${userName}";
-            autoMigrate = true;
-            # Optional: Declarative tap management
-            # taps = {
-            #   "homebrew/homebrew-core" = homebrew-core;
-            #   "homebrew/homebrew-cask" = homebrew-cask;
-            # };
-
-            # Optional: Enable fully-declarative tap management
-            # With mutableTaps disabled, taps can no longer be added imperatively with `brew tap`.
-            # mutableTaps = false;
-          };
-        }
       ];
     };
 
