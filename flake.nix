@@ -23,7 +23,7 @@
     userName = "petermousses";
     hostName = "PeterBook-Air";
     systemType = "aarch64-darwin";
-    configuration = { pkgs, config, ... }: {
+    generalConfiguration = { pkgs, config, ... }: {
       # programs.zsh.enable = true;
       # environment.shells = [ pkgs.bash pkgs.zsh ];
       # environment.loginshell = pkgs.zsh;
@@ -31,6 +31,31 @@
       #   experimental-features = nix-command flakes 
       # '';
 
+      
+
+      # Auto upgrade nix package and the daemon service.
+      services.nix-daemon.enable = true;
+      # nix.package = pkgs.nix;
+
+      # Necessary for using flakes on this system.
+      nix.settings.experimental-features = "nix-command flakes";
+
+      # Create /etc/zshrc that loads the nix-darwin environment.
+      programs.zsh.enable = true;  # default shell on catalina
+      # programs.fish.enable = true;
+
+      # Set Git commit hash for darwin-version.
+      system.configurationRevision = inputs.self.rev or inputs.self.dirtyRev or null;
+
+      # Used for backwards compatibility, please read the changelog before changing.
+      # $ darwin-rebuild changelog
+      system.stateVersion = 5;
+
+      # The platform the configuration will be used on.
+      nixpkgs.hostPlatform = "aarch64-darwin";
+    };
+
+    packagesConfiguration = { pkgs, config, ...}: {
       nixpkgs.config = {
         allowUnfree = true;
       };
@@ -138,100 +163,106 @@
           upgrade = true;
         };
       };
+    };
 
+    systemConfiguration = { pkgs, config, ... }: {
       # Discover settings here: https://daiderd.com/nix-darwin/manual/index.html
       # and here: https://mynixos.com/nix-darwin/options
-      system.keyboard = {
-        enableKeyMapping = true;
-        remapCapsLockToEscape = true;
-      };
-      system.defaults = {
-        ".GlobalPreferences"."com.apple.sound.beep.sound" = "/System/Library/Sounds/Blow.aiff"; # This should be breeze but the names don't match with the settings app
-        # ActivityMonitor.IconType = 5;
-        loginwindow.GuestEnabled = false;
-        loginwindow.LoginwindowText = "If lost contact peter.mousses@icloud.com";
-        # ScreenSaver = {
-        #   askForPassword = true;
-        #   askForPasswordDelay = 0;
-        #   modulePath = "/System/Library/Screen Savers/Flurry.saver";
-        # };
-        menuExtraClock = {
-          ShowSeconds = true;
-          ShowDayOfWeek = true;
-          ShowDayOfMonth = true;
-          ShowDate = 1;
-          ShowAMPM = true;
+      system = {
+        keyboard = {
+          enableKeyMapping = true;
+          remapCapsLockToEscape = true;
         };
-        finder = {
-          FXPreferredViewStyle = "clmv"; # Column view
-          _FXSortFoldersFirst = true;
-          AppleShowAllFiles = true;
-          AppleShowAllExtensions = true;
-          FXDefaultSearchScope = "SCcf"; # Search current folder
-          QuitMenuItem = false;
-          ShowPathbar = false;
-          ShowStatusBar = true;
-          # NewWindowTarget = "PfHm";
-        };
-        magicmouse.MouseButtonMode = "TwoButton";
-        # screencapture.disable-shadow = true;
-        trackpad = {
-          ActuationStrength = 0;
-          FirstClickThreshold = 0;
-          TrackpadRightClick = true;
-        };
-        WindowManager.EnableStandardClickToShowDesktop = false;
-        NSGlobalDomain = {
-          AppleInterfaceStyle = "Dark";
-          "com.apple.sound.beep.feedback" = 1;
-          "com.apple.trackpad.forceClick" = true;
-          AppleShowScrollBars = "Always";
-          NSAutomaticSpellingCorrectionEnabled = false;
-          NSAutomaticCapitalizationEnabled = false;
-          NSAutomaticPeriodSubstitutionEnabled = false;
-          NSAutomaticQuoteSubstitutionEnabled = false;
-          # NSAutomaticDashSubstitutionEnable = false;
-          NSAutomaticInlinePredictionEnabled = false;
-          KeyRepeat = 6;
-          InitialKeyRepeat = 25;
-          # NSDocumentSaveNewDocumentsToCloud = false;
-        };
-        dock = {
-          orientation = "left";
-          magnification = true;
-          # largesize = 60;
-          showhidden = true;
-          show-recents = false;
-          persistent-apps = [
-            # "/System/Library/CoreServices/Finder.app"
-            "/System/Applications/Utilities/Activity Monitor.app"
-            "/System/Applications/Mission Control.app"
-            "/System/Applications/Launchpad.app"
+        defaults = {
+          ".GlobalPreferences"."com.apple.sound.beep.sound" = "/System/Library/Sounds/Blow.aiff"; # This should be breeze but the names don't match with the settings app
+          # ActivityMonitor.IconType = 5;
+          loginwindow = {
+            GuestEnabled = false;
+            LoginwindowText = "If lost contact peter.mousses@icloud.com";
+          };
+          # ScreenSaver = {
+          #   askForPassword = true;
+          #   askForPasswordDelay = 0;
+          #   modulePath = "/System/Library/Screen Savers/Flurry.saver";
+          # };
+          menuExtraClock = {
+            ShowSeconds = true;
+            ShowDayOfWeek = true;
+            ShowDayOfMonth = true;
+            ShowDate = 1;
+            ShowAMPM = true;
+          };
+          finder = {
+            FXPreferredViewStyle = "clmv"; # Column view
+            _FXSortFoldersFirst = true;
+            AppleShowAllFiles = true;
+            AppleShowAllExtensions = true;
+            FXDefaultSearchScope = "SCcf"; # Search current folder
+            QuitMenuItem = false;
+            ShowPathbar = false;
+            ShowStatusBar = true;
+            # NewWindowTarget = "PfHm";
+          };
+          magicmouse.MouseButtonMode = "TwoButton";
+          # screencapture.disable-shadow = true;
+          trackpad = {
+            ActuationStrength = 0;
+            FirstClickThreshold = 0;
+            TrackpadRightClick = true;
+          };
+          WindowManager.EnableStandardClickToShowDesktop = false;
+          NSGlobalDomain = {
+            AppleInterfaceStyle = "Dark"; # Doesn't work
+            "com.apple.sound.beep.feedback" = 1;
+            "com.apple.trackpad.forceClick" = true;
+            AppleShowScrollBars = "Always";
+            NSAutomaticSpellingCorrectionEnabled = false;
+            NSAutomaticCapitalizationEnabled = false;
+            NSAutomaticPeriodSubstitutionEnabled = false;
+            NSAutomaticQuoteSubstitutionEnabled = false;
+            # NSAutomaticDashSubstitutionEnable = false;
+            NSAutomaticInlinePredictionEnabled = false;
+            KeyRepeat = 6;
+            InitialKeyRepeat = 25;
+            # NSDocumentSaveNewDocumentsToCloud = false;
+          };
+          dock = {
+            orientation = "left";
+            magnification = true;
+            # largesize = 60;
+            showhidden = true;
+            show-recents = false;
+            persistent-apps = [
+              # "/System/Library/CoreServices/Finder.app"
+              "/System/Applications/Utilities/Activity Monitor.app"
+              "/System/Applications/Mission Control.app"
+              "/System/Applications/Launchpad.app"
 
-            "/Applications/Librewolf.app"
-            "${pkgs.google-chrome}/Applications/Google Chrome.app"
+              "/Applications/Librewolf.app"
+              "${pkgs.google-chrome}/Applications/Google Chrome.app"
 
-            "/System/Applications/Calendar.app"
-            "/System/Applications/Mail.app"
+              "/System/Applications/Calendar.app"
+              "/System/Applications/Mail.app"
 
-            "/System/Applications/Utilities/Terminal.app"
-            "/Applications/Visual Studio Code.app"
-            "/Applications/Android Studio.app"
+              "/System/Applications/Utilities/Terminal.app"
+              "/Applications/Visual Studio Code.app"
+              "/Applications/Android Studio.app"
 
-            "/System/Applications/Reminders.app"
-            "/System/Applications/Preview.app"
-            "/Applications/Spotify.app"
-            "/System/Applications/System Settings.app"
-          ];
-          persistent-others = [
-            "/Users/petermousses/Downloads"
-          ];
+              "/System/Applications/Reminders.app"
+              "/System/Applications/Preview.app"
+              "/Applications/Spotify.app"
+              "/System/Applications/System Settings.app"
+            ];
+            persistent-others = [
+              "/Users/${userName}/Downloads"
+            ];
 
-          # Hot Corners. Options: https://mynixos.com/nix-darwin/option/system.defaults.dock.wvous-bl-corner
-          wvous-tl-corner = 5;  # Screen Saver
-          wvous-tr-corner = 14;  # Quick Note
-          wvous-bl-corner = 11;  # Launchpad
-          wvous-br-corner = 4;  # Desktop
+            # Hot Corners. Options: https://mynixos.com/nix-darwin/option/system.defaults.dock.wvous-bl-corner
+            wvous-tl-corner = 5;  # Screen Saver
+            wvous-tr-corner = 14;  # Quick Note
+            wvous-bl-corner = 11;  # Launchpad
+            wvous-br-corner = 4;  # Desktop
+          };
         };
       };
 
@@ -257,10 +288,6 @@
         '';
       
       system.activationScripts.setScreensaver.text = let
-        userName = "petermousses";
-        userUid = pkgs.runCommand "get-uid" { } ''
-          echo -n $(id -u ${userName})
-        '';
       in
         pkgs.lib.mkForce ''
           # Set screensaver settings
@@ -275,45 +302,26 @@
           sudo -u ${userName} /usr/bin/defaults write com.apple.screensaver askForPassword -int 1
           sudo -u ${userName} /usr/bin/defaults write com.apple.screensaver askForPasswordDelay -int 0
         '';
-
-      # Auto upgrade nix package and the daemon service.
-      services.nix-daemon.enable = true;
-      # nix.package = pkgs.nix;
-
-      # Necessary for using flakes on this system.
-      nix.settings.experimental-features = "nix-command flakes";
-
-      # Create /etc/zshrc that loads the nix-darwin environment.
-      programs.zsh.enable = true;  # default shell on catalina
-      # programs.fish.enable = true;
-
-      # Set Git commit hash for darwin-version.
-      system.configurationRevision = inputs.self.rev or inputs.self.dirtyRev or null;
-
-      # Used for backwards compatibility, please read the changelog before changing.
-      # $ darwin-rebuild changelog
-      system.stateVersion = 5;
-
-      # The platform the configuration will be used on.
-      nixpkgs.hostPlatform = "aarch64-darwin";
     };
   in
   {
     # Build darwin flake using:
     # $ darwin-rebuild build --flake .#PeterBook-Air
-    darwinConfigurations."PeterBook-Air" = inputs.nix-darwin.lib.darwinSystem {
+    darwinConfigurations."${hostName}" = inputs.nix-darwin.lib.darwinSystem {
       # system = "aarch64-darwin";
       # pkgs = import inputs.nixpkgs { 
       #   # inherit inputs;
       #   system = "aarch64-darwin";
       # };
       modules = [ 
-        configuration
+        generalConfiguration
+        packagesConfiguration
+        systemConfiguration
         inputs.nix-homebrew.darwinModules.nix-homebrew {
           nix-homebrew = {
             enable = false;
             enableRosetta = true;
-            user = "petermousses";
+            user = "${userName}";
             autoMigrate = true;
             # Optional: Declarative tap management
             # taps = {
@@ -329,9 +337,9 @@
       ];
     };
 
-    homeConfigurations."petermousses" = inputs.home-manager.lib.homeManagerConfiguration {
-      pkgs = inputs.nixpkgs.legacyPackages."aarch64-darwin";
-      homeDirectory = "/Users/petermousses";
+    homeConfigurations."${userName}" = inputs.home-manager.lib.homeManagerConfiguration {
+      pkgs = inputs.nixpkgs.legacyPackages."${systemType}";
+      homeDirectory = "/Users/${userName}";
       stateVersion = "23.05";  # Adjust to your home-manager version
       extraSpecialArgs = { inherit inputs; };
       modules = [
@@ -340,6 +348,6 @@
     };
 
     # Expose the package set, including overlays, for convenience.
-    darwinPackages = inputs.self.darwinConfigurations."PeterBook-Air".pkgs;
+    darwinPackages = inputs.self.darwinConfigurations."${hostName}".pkgs;
   };
 }
