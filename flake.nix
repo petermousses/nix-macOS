@@ -27,15 +27,6 @@
     hostName = "PeterBook-Air";
     systemType = "aarch64-darwin";
     generalConfiguration = { pkgs, config, ... }: {
-      # programs.zsh.enable = true;
-      # environment.shells = [ pkgs.bash pkgs.zsh ];
-      # environment.loginshell = pkgs.zsh;
-      # nix.extraOptions = ''
-      #   experimental-features = nix-command flakes
-      # '';
-
-
-
       # Auto upgrade nix package and the daemon service.
       services.nix-daemon.enable = true;
       # nix.package = pkgs.nix;
@@ -46,6 +37,8 @@
       # Create /etc/zshrc that loads the nix-darwin environment.
       programs.zsh.enable = true;  # default shell on catalina
       # programs.fish.enable = true;
+      environment.shells = [ pkgs.bash pkgs.zsh ];
+      environment.loginShell = pkgs.zsh;
 
       # Set Git commit hash for darwin-version.
       system.configurationRevision = inputs.self.rev or inputs.self.dirtyRev or null;
@@ -55,7 +48,7 @@
       system.stateVersion = 5;
 
       # The platform the configuration will be used on.
-      nixpkgs.hostPlatform = "aarch64-darwin";
+      nixpkgs.hostPlatform = "${systemType}";
     };
 
     systemPackagesConfiguration = { pkgs, config, ...}: {
@@ -129,7 +122,7 @@
 
     homebrewConfiguration = { pkgs, config, nix-homebrew, ...}: {
       # https://github.com/zhaofengli/nix-homebrew
-      nix-homebrew.darwinModules.nix-homebrew {
+      # inputs.nix-homebrew.darwinModules.nix-homebrew {
         nix-homebrew = {
           # Your nix-homebrew configuration
           enable = false;
@@ -184,7 +177,7 @@
           # With mutableTaps disabled, taps can no longer be added imperatively with `brew tap`.
           # mutableTaps = false;
         };
-      }
+      # }
     };
 
     systemConfiguration = { pkgs, config, ... }: {
@@ -330,16 +323,66 @@
     # Build darwin flake using:
     # $ darwin-rebuild build --flake .#PeterBook-Air
     darwinConfigurations."${hostName}" = inputs.nix-darwin.lib.darwinSystem {
-      # system = "aarch64-darwin";
-      # pkgs = import inputs.nixpkgs {
-      #   # inherit inputs;
-      #   system = "aarch64-darwin";
-      # };
       modules = [
         generalConfiguration
-        systemPackagesConfiguration
-        homebrewConfiguration
         systemConfiguration
+        systemPackagesConfiguration
+        # inputs.nix-homebrew.darwinModules.nix-homebrew {
+        #   nix-homebrew = {
+        #     # Your nix-homebrew configuration
+        #     enable = false;
+        #     homebrewPrefix = "/opt/homebrew";
+        #     user = "${userName}";
+        #     enableRosetta = true;
+        #     autoMigrate = true;
+        #     brews = [
+        #       "mas"
+        #     ];
+        #     casks = [
+        #       "bitwarden"
+        #       "librewolf" # how to use --no-quarantine?
+        #       "the-unarchiver"
+        #       # "google-chrome"
+        #       "spotify"
+        #       "signal"
+        #       "font-monocraft"
+        #       "avibrazil-rdm"
+        #       "unnaturalscrollwheels"
+        #       "utm"
+        #       "vlc"
+        #       "visual-studio-code"
+        #       "aldente"
+        #       "zoom"
+        #     ];
+        #     masApps = {
+        #       # "Tailscale" = "1475387142";
+        #       "MicrosoftOneNote" = 784801555;
+        #       "MicrosoftWord" = 462054704;
+        #       "MicrosoftExcel" = 462058435;
+        #       "MicrosoftPowerPoint" = 462062816;
+        #       # "WindowsAppAKARemoteDesktop" = "1295203466";
+        #       # "Xcode" = "497799835";
+        #       # "DevCleanerXcode" = "1388020431";
+        #       # "Notability" = "360593530";
+        #       # "KindleClassic" = "405399194";
+        #       # "CrystalFetchISO" = "6454431289";
+        #     };
+        #     onActivation = {
+        #       cleanup = "zap";
+        #       autoUpdate = true;
+        #       upgrade = true;
+        #     };
+        #     # Optional: Declarative tap management
+        #     # taps = {
+        #     #   "homebrew/homebrew-core" = homebrew-core;
+        #     #   "homebrew/homebrew-cask" = homebrew-cask;
+        #     # };
+
+        #     # Optional: Enable fully-declarative tap management
+        #     # With mutableTaps disabled, taps can no longer be added imperatively with `brew tap`.
+        #     # mutableTaps = false;
+        #   };
+        # }
       ];
     };
 
