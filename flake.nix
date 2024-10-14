@@ -6,17 +6,17 @@
     nix-darwin.url = "github:LnL7/nix-darwin";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
     nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew";
-    homebrew-core = {
-      url = "github:homebrew/homebrew-core";
-      flake = true;
-    };
-    homebrew-cask = {
-      url = "github:homebrew/homebrew-cask";
-      flake = true;
-    };
+    # homebrew-core = {
+    #   url = "github:homebrew/homebrew-core";
+    #   flake = false;
+    # };
+    # homebrew-cask = {
+    #   url = "github:homebrew/homebrew-cask";
+    #   flake = false;
+    # };
   };
 
-  outputs = inputs@{ self, nix-darwin, nixpkgs, nix-homebrew, homebrew-core, homebrew-cask }:
+  outputs = inputs@{ self, nix-darwin, nixpkgs, nix-homebrew }:#, homebrew-core, homebrew-cask }:
   let
     configuration = { pkgs, config, ... }: {
 
@@ -68,18 +68,9 @@
       # fonts.packages = [
       # ];
 
+      # https://github.com/zhaofengli/nix-homebrew
       homebrew = {
         enable = true;
-        user = "petermousses";
-        # Optional: Declarative tap management
-        taps = {
-          "homebrew/homebrew-core" = homebrew-core;
-          "homebrew/homebrew-cask" = homebrew-cask;
-        };
-
-        # Optional: Enable fully-declarative tap management
-        # With mutableTaps disabled, taps can no longer be added imperatively with `brew tap`.
-        mutableTaps = false;
         brews = [
           "mas"
           # "rust"
@@ -131,6 +122,12 @@
         ".GlobalPreferences"."com.apple.sound.beep.sound" = "/System/Library/Sounds/Blow.aiff"; # This should be breeze but the names don't match with the settings app
         # ActivityMonitor.IconType = 5;
         loginwindow.GuestEnabled = false;
+        loginwindow.LoginwindowText = "If lost contact peter.mousses@icloud.com";
+        ScreenSaver = {
+          askForPassword = true;
+          askForPasswordDelay = 0;
+          modulePath = "/System/Library/Screen Savers/Flurry.saver";
+        };
         menuExtraClock = {
           ShowSeconds = true;
           ShowDayOfWeek = true;
@@ -149,7 +146,6 @@
           ShowStatusBar = true;
           # NewWindowTarget = "PfHm";
         };
-        loginwindow.LoginwindowText = "If lost contact peter.mousses@icloud.com";
         magicmouse.MouseButtonMode = "TwoButton";
         # screencapture.disable-shadow = true;
         trackpad = {
@@ -267,6 +263,15 @@
             enableRosetta = true;
             user = "petermousses";
             autoMigrate = true;
+            # Optional: Declarative tap management
+            # taps = {
+            #   "homebrew/homebrew-core" = homebrew-core;
+            #   "homebrew/homebrew-cask" = homebrew-cask;
+            # };
+
+            # Optional: Enable fully-declarative tap management
+            # With mutableTaps disabled, taps can no longer be added imperatively with `brew tap`.
+            # mutableTaps = false;
           };
         }
       ];
