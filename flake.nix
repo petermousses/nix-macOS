@@ -6,6 +6,8 @@
     nix-darwin.url = "github:LnL7/nix-darwin";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
     nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew";
+    home-manager.url = "github:nix-community/home-manager";
+    home-manager.inputs.nixpkgs.follows = "nixpkgs";
     # homebrew-core = {
     #   url = "github:homebrew/homebrew-core";
     #   flake = false;
@@ -16,9 +18,15 @@
     # };
   };
 
-  outputs = inputs@{ self, nix-darwin, nixpkgs, nix-homebrew }:#, homebrew-core, homebrew-cask }:
+  outputs = inputs:
   let
     configuration = { pkgs, config, ... }: {
+      programs.zsh.enable = true;
+      environment.shells = [ pkgs.bash pkgs.zsh ];
+      environment.loginshell = pkgs.zsh;
+      nix.extraOptions = ''
+        experimental-features = nix-command flakes 
+      '';
 
       nixpkgs.config = {
         allowUnfree = true;
@@ -27,54 +35,70 @@
       # List packages installed in system profile. To search by name, run:
       # $ nix-env -qaP | grep wget
       environment.systemPackages = [
-          # Terminal setup
-          pkgs.mkalias
-          pkgs.zsh
-          # pkgs.vim
-          pkgs.neovim
-          pkgs.tmux
+        # Terminal setup
+        pkgs.mkalias
+        pkgs.zsh
+        # pkgs.oh-my-zsh
+        pkgs.bash
+        # pkgs.vim
+        pkgs.neovim
+        pkgs.tmux
 
-          # Development tools
-          pkgs.git
-          pkgs.openssh
-          pkgs.libmamba
-          # pkgs.libgcc
-          pkgs.gradle
-          pkgs.jdk
-          pkgs.rustup
-          pkgs.qemu
-          pkgs.docker
-          pkgs.docker-compose
-          # pkgs.kubectl
+        # Development tools
+        # pkgs.coreutils
+        pkgs.git
+        pkgs.openssh
+        pkgs.libmamba
+        # pkgs.libgcc
+        pkgs.gradle
+        pkgs.jdk
+        pkgs.rustup
+        pkgs.qemu
+        pkgs.docker
+        pkgs.docker-compose
+        # pkgs.kubectl
 
-          # Other CLI tools
-          pkgs.yt-dlp
-          pkgs.neofetch
-          pkgs.ffmpeg
-          # pkgs.wget
-          # pkgs.curl
-          # pkgs.ocaml
+        # Other CLI tools
+        pkgs.yt-dlp
+        pkgs.neofetch
+        pkgs.cmatrix
+        pkgs.ffmpeg
+        # pkgs.wget
+        # pkgs.curl
+        # pkgs.ocaml
 
-          # GUI applications
-          pkgs.obsidian
-          # pkgs.librewolf # no aarch64 support
-          pkgs.google-chrome
-          # pkgs.bitwarden-desktop # no aarch64 support. Rosseta?
-          # pkgs.bitwarden-cli
-          # pkgs.spotify
-          pkgs.tailscale
-        ];
+        # GUI applications
+        pkgs.obsidian
+        # pkgs.librewolf # no aarch64 support
+        pkgs.google-chrome
+        # pkgs.bitwarden-desktop # no aarch64 support. Rosseta?
+        # pkgs.bitwarden-cli
+        # pkgs.spotify
+        pkgs.tailscale
+      ];
       
-      # fonts.packages = [
-      # ];
+      fonts = {
+        fontDir.enable = false;
+        # "monocraft" = pkgs.fonts.monocraft;
+        fonts = [
+          # pkgs.fonts.monocraft
+          (pkgs.nerdfonts.override {
+            fonts = [
+              pkgs.nerdfonts.FiraCode
+              pkgs.nerdfonts.Hack
+              pkgs.nerdfonts.JetBrainsMono
+              pkgs.nerdfonts.Mononoki
+              pkgs.nerdfonts.SourceCodePro
+              pkgs.nerdfonts.UbuntuMono
+            ];
+          })
+        ];
+      }
 
       # https://github.com/zhaofengli/nix-homebrew
       homebrew = {
-        enable = true;
         brews = [
           "mas"
-          # "rust"
-          "cmatrix"
         ];
         casks = [
           "bitwarden"
@@ -123,11 +147,11 @@
         # ActivityMonitor.IconType = 5;
         loginwindow.GuestEnabled = false;
         loginwindow.LoginwindowText = "If lost contact peter.mousses@icloud.com";
-        ScreenSaver = {
-          askForPassword = true;
-          askForPasswordDelay = 0;
-          modulePath = "/System/Library/Screen Savers/Flurry.saver";
-        };
+        # ScreenSaver = {
+        #   askForPassword = true;
+        #   askForPasswordDelay = 0;
+        #   modulePath = "/System/Library/Screen Savers/Flurry.saver";
+        # };
         menuExtraClock = {
           ShowSeconds = true;
           ShowDayOfWeek = true;
@@ -217,17 +241,37 @@
         };
       in
         pkgs.lib.mkForce ''
-        # Set up applications.
-        echo "setting up /Applications..." >&2
-        rm -rf /Applications/Nix\ Apps
-        mkdir -p /Applications/Nix\ Apps
-        find ${env}/Applications -maxdepth 1 -type l -exec readlink '{}' + |
-        while read src; do
-          app_name=$(basename "$src")
-          echo "copying $src" >&2
-          ${pkgs.mkalias}/bin/mkalias "$src" "/Applications/Nix Apps/$app_name"
-        done
-            '';
+          # Set up applications.
+          echo "setting up /Applications..." >&2
+          rm -rf /Applications/Nix\ Apps
+          mkdir -p /Applications/Nix\ Apps
+          find ${env}/Applications -maxdepth 1 -type l -exec readlink '{}' + |
+          while read src; do
+            app_name=$(basename "$src")
+            echo "copying $src" >&2
+            ${pkgs.mkalias}/bin/mkalias "$src" "/Applications/Nix Apps/$app_name"
+          done
+        '';
+      
+      system.activationScripts.setScreensaver.text = let
+        userName = "petermousses";
+        userUid = pkgs.runCommand "get-uid" { } ''
+          echo -n $(id -u ${userName})
+        '';
+      in
+        pkgs.lib.mkForce ''
+          # Set screensaver settings
+          echo "setting up screensaver..." >&2
+          sudo -u ${userName} /usr/bin/defaults -currentHost write com.apple.screensaver moduleDict -dict-add \
+            moduleName "Flurry" \
+            path "/System/Library/Screen Savers/Flurry.saver" \
+            type -int 0
+
+          sudo -u ${userName} /usr/bin/defaults -currentHost write com.apple.screensaver idleTime -int 300
+
+          sudo -u ${userName} /usr/bin/defaults write com.apple.screensaver askForPassword -int 1
+          sudo -u ${userName} /usr/bin/defaults write com.apple.screensaver askForPasswordDelay -int 0
+        '';
 
       # Auto upgrade nix package and the daemon service.
       services.nix-daemon.enable = true;
@@ -241,7 +285,7 @@
       # programs.fish.enable = true;
 
       # Set Git commit hash for darwin-version.
-      system.configurationRevision = self.rev or self.dirtyRev or null;
+      system.configurationRevision = inputs.self.rev or inputs.self.dirtyRev or null;
 
       # Used for backwards compatibility, please read the changelog before changing.
       # $ darwin-rebuild changelog
@@ -254,12 +298,17 @@
   {
     # Build darwin flake using:
     # $ darwin-rebuild build --flake .#PeterBook-Air
-    darwinConfigurations."PeterBook-Air" = nix-darwin.lib.darwinSystem {
+    darwinConfigurations."PeterBook-Air" = inputs.nix-darwin.lib.darwinSystem {
+      system = "aarch64-darwin";
+      pkgs = import inputs.nixpkgs { 
+        # inherit inputs;
+        system = "aarch64-darwin";
+      };
       modules = [ 
         configuration
-        nix-homebrew.darwinModules.nix-homebrew {
+        inputs.nix-homebrew.darwinModules.nix-homebrew {
           nix-homebrew = {
-            enable = true;
+            enable = false;
             enableRosetta = true;
             user = "petermousses";
             autoMigrate = true;
@@ -277,7 +326,17 @@
       ];
     };
 
+    homeConfigurations."petermousses" = inputs.home-manager.lib.homeManagerConfiguration {
+      pkgs = inputs.nixpkgs.legacyPackages."aarch64-darwin";
+      homeDirectory = "/Users/petermousses";
+      stateVersion = "23.05";  # Adjust to your home-manager version
+      extraSpecialArgs = { inherit inputs; };
+      modules = [
+        ./home.nix  # Path to your home-manager configuration
+      ];
+    };
+
     # Expose the package set, including overlays, for convenience.
-    darwinPackages = self.darwinConfigurations."PeterBook-Air".pkgs;
+    darwinPackages = inputs.self.darwinConfigurations."PeterBook-Air".pkgs;
   };
 }
