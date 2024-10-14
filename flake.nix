@@ -20,13 +20,16 @@
 
   outputs = inputs:
   let
+    userName = "petermousses";
+    hostName = "PeterBook-Air";
+    systemType = "aarch64-darwin";
     configuration = { pkgs, config, ... }: {
-      programs.zsh.enable = true;
-      environment.shells = [ pkgs.bash pkgs.zsh ];
-      environment.loginshell = pkgs.zsh;
-      nix.extraOptions = ''
-        experimental-features = nix-command flakes 
-      '';
+      # programs.zsh.enable = true;
+      # environment.shells = [ pkgs.bash pkgs.zsh ];
+      # environment.loginshell = pkgs.zsh;
+      # nix.extraOptions = ''
+      #   experimental-features = nix-command flakes 
+      # '';
 
       nixpkgs.config = {
         allowUnfree = true;
@@ -39,7 +42,7 @@
         pkgs.mkalias
         pkgs.zsh
         # pkgs.oh-my-zsh
-        pkgs.bash
+        # pkgs.bash
         # pkgs.vim
         pkgs.neovim
         pkgs.tmux
@@ -77,23 +80,23 @@
         pkgs.tailscale
       ];
       
-      fonts = {
-        fontDir.enable = false;
-        # "monocraft" = pkgs.fonts.monocraft;
-        fonts = [
-          # pkgs.fonts.monocraft
-          (pkgs.nerdfonts.override {
-            fonts = [
-              pkgs.nerdfonts.FiraCode
-              pkgs.nerdfonts.Hack
-              pkgs.nerdfonts.JetBrainsMono
-              pkgs.nerdfonts.Mononoki
-              pkgs.nerdfonts.SourceCodePro
-              pkgs.nerdfonts.UbuntuMono
-            ];
-          })
-        ];
-      }
+      # fonts = {
+      #   fontDir.enable = false;
+      #   # "monocraft" = pkgs.fonts.monocraft;
+      #   fonts = [
+      #     # pkgs.fonts.monocraft
+      #     (pkgs.nerdfonts.override {
+      #       fonts = [
+      #         pkgs.nerdfonts.FiraCode
+      #         pkgs.nerdfonts.Hack
+      #         pkgs.nerdfonts.JetBrainsMono
+      #         pkgs.nerdfonts.Mononoki
+      #         pkgs.nerdfonts.SourceCodePro
+      #         pkgs.nerdfonts.UbuntuMono
+      #       ];
+      #     })
+      #   ];
+      # };
 
       # https://github.com/zhaofengli/nix-homebrew
       homebrew = {
@@ -299,11 +302,11 @@
     # Build darwin flake using:
     # $ darwin-rebuild build --flake .#PeterBook-Air
     darwinConfigurations."PeterBook-Air" = inputs.nix-darwin.lib.darwinSystem {
-      system = "aarch64-darwin";
-      pkgs = import inputs.nixpkgs { 
-        # inherit inputs;
-        system = "aarch64-darwin";
-      };
+      # system = "aarch64-darwin";
+      # pkgs = import inputs.nixpkgs { 
+      #   # inherit inputs;
+      #   system = "aarch64-darwin";
+      # };
       modules = [ 
         configuration
         inputs.nix-homebrew.darwinModules.nix-homebrew {
