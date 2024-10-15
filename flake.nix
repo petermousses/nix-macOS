@@ -101,6 +101,7 @@
         # Other CLI tools
         pkgs.yt-dlp
         pkgs.neofetch
+        pkgs.tree
         pkgs.cmatrix
         pkgs.ffmpeg
         # pkgs.wget
@@ -114,8 +115,11 @@
         # pkgs.bitwarden-desktop # no aarch64 support. Rosseta?
         # pkgs.bitwarden-cli
         pkgs.spotify
-        pkgs.tailscale
+        # pkgs.tailscale # Isn't shown in apps
         # pkgs.signal-desktop
+        pkgs.utm
+        pkgs.vlc-bin-universal
+        # pkgs.unar # The Unarchiver # Isn't shown in apps
       ];
     };
 
@@ -200,7 +204,22 @@
     };
 
     homebrewConfiguration2 = { pkgs, config, nix-homebrew, ...}: {
-       # https://github.com/zhaofengli/nix-homebrew
+      system.activationScripts.installHomebrew.text = let
+        env = pkgs.buildEnv {
+          name = "homebrew";
+          paths = config.environment.systemPackages;
+          pathsToLink = "/opt/homebrew";
+        };
+      in
+        pkgs.lib.mkForce ''
+          # Install Homebrew
+          echo "installing Homebrew..." >&2
+          rm -rf /opt/homebrew
+          mkdir -p /opt
+          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        '';
+
+      # https://github.com/zhaofengli/nix-homebrew
       homebrew = {
         brews = [
           "mas"
@@ -208,15 +227,14 @@
         casks = [
           "bitwarden"
           "librewolf" # how to use --no-quarantine?
-          "the-unarchiver"
+          # "the-unarchiver"
           # "google-chrome"
           # "spotify"
           "signal"
           "font-monocraft"
           "avibrazil-rdm"
           "unnaturalscrollwheels"
-          "utm"
-          "vlc"
+          # "vlc"
           "visual-studio-code"
           "aldente"
           "zoom"
@@ -328,7 +346,7 @@
 
               "/System/Applications/Reminders.app"
               "/System/Applications/Preview.app"
-              "/Applications/Spotify.app"
+              "${pkgs.spotify}/Applications/Spotify.app"
               "/System/Applications/System Settings.app"
             ];
             persistent-others = [
@@ -346,20 +364,11 @@
     };
 
     scripts = { pkgs, config, ... }: {
-      system.activationScripts.installHomebrew.text = let
-        env = pkgs.buildEnv {
-          name = "homebrew";
-          paths = config.environment.systemPackages;
-          pathsToLink = "/opt/homebrew";
-        };
-      in
-        pkgs.lib.mkForce ''
-          # Install Homebrew
-          echo "installing Homebrew..." >&2
-          rm -rf /opt/homebrew
-          mkdir -p /opt
-          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-        '';
+      system.activationScripts.extraActivation.text = ''
+        # Install Rosetta
+        echo "installing Rosetta..." >&2
+        softwareupdate --install-rosetta --agree-to-license
+      '';
 
       # Source: https://gist.github.com/elliottminns/211ef645ebd484eb9a5228570bb60ec3
       system.activationScripts.applications.text = let
