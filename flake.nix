@@ -74,52 +74,52 @@
 
       # List packages installed in system profile. To search by name, run:
       # $ nix-env -qaP | grep wget
-      environment.systemPackages = [
+      environment.systemPackages = with pkgs; [
         # Terminal setup
-        pkgs.mkalias
-        pkgs.zsh
-        # pkgs.oh-my-zsh
-        # pkgs.bash
-        # pkgs.vim
-        pkgs.neovim
-        pkgs.tmux
+        mkalias
+        zsh
+        # oh-my-zsh
+        # bash
+        # vim
+        neovim
+        tmux
 
         # Development tools
-        # pkgs.coreutils
-        pkgs.git
-        pkgs.openssh
-        pkgs.libmamba
-        # pkgs.libgcc
-        pkgs.gradle
-        pkgs.jdk
-        pkgs.rustup
-        pkgs.qemu
-        pkgs.docker
-        pkgs.docker-compose
-        # pkgs.kubectl
+        # coreutils
+        git
+        openssh
+        libmamba
+        # libgcc
+        gradle
+        jdk
+        rustup
+        qemu
+        docker
+        docker-compose
+        # kubectl
 
         # Other CLI tools
-        pkgs.yt-dlp
-        pkgs.neofetch
-        pkgs.tree
-        pkgs.cmatrix
-        pkgs.ffmpeg
-        # pkgs.wget
-        # pkgs.curl
-        # pkgs.ocaml
+        yt-dlp
+        neofetch
+        tree
+        cmatrix
+        ffmpeg
+        # wget
+        # curl
+        # ocaml
 
         # GUI applications
-        pkgs.obsidian
-        # pkgs.librewolf # no aarch64 support
-        pkgs.google-chrome
-        # pkgs.bitwarden-desktop # no aarch64 support. Rosseta?
-        # pkgs.bitwarden-cli
-        pkgs.spotify
-        # pkgs.tailscale # Isn't shown in apps
-        # pkgs.signal-desktop
-        pkgs.utm
-        pkgs.vlc-bin-universal
-        # pkgs.unar # The Unarchiver # Isn't shown in apps
+        obsidian
+        # librewolf # no aarch64 support
+        google-chrome
+        # bitwarden-desktop # no aarch64 support. Rosseta?
+        # bitwarden-cli
+        spotify
+        # tailscale # Isn't shown in apps
+        # signal-desktop
+        utm
+        vlc-bin-universal
+        # unar # The Unarchiver # Isn't shown in apps
       ];
     };
 
@@ -203,24 +203,14 @@
       # }
     };
 
-    homebrewConfiguration2 = { pkgs, config, nix-homebrew, ...}: {
-      system.activationScripts.installHomebrew.text = let
-        env = pkgs.buildEnv {
-          name = "homebrew";
-          paths = config.environment.systemPackages;
-          pathsToLink = "/opt/homebrew";
-        };
-      in
-        pkgs.lib.mkForce ''
-          # Install Homebrew
-          echo "installing Homebrew..." >&2
-          rm -rf /opt/homebrew
-          mkdir -p /opt
-          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-        '';
-
+    homebrewConfiguration2 = { pkgs, config, lib, ...}: {
       # https://github.com/zhaofengli/nix-homebrew
       homebrew = {
+        enable = true;
+        caskArgs.no_quarantine = true;
+        global.brewfile = true;
+        # enableRosetta = true;
+        # autoMigrate = true;
         brews = [
           "mas"
         ];
@@ -270,7 +260,7 @@
         };
         defaults = {
           ".GlobalPreferences"."com.apple.sound.beep.sound" = "/System/Library/Sounds/Blow.aiff"; # This should be breeze but the names don't match with the settings app
-          # ActivityMonitor.IconType = 5;
+          ActivityMonitor.IconType = 1;
           loginwindow = {
             GuestEnabled = false;
             LoginwindowText = "If lost contact peter.mousses@icloud.com";
@@ -370,6 +360,40 @@
         softwareupdate --install-rosetta --agree-to-license
       '';
 
+
+      system.activationScripts.installHomebrew =  {
+        text = ''
+          #!/usr/bin/env bash
+          set -euo pipefail
+
+          # Install Homebrew as user 'petermousses'
+          echo "Activation script installHomebrew is running as $(whoami)" >&2
+
+          HOMEBREW_PREFIX="/opt/homebrew"
+          USER_NAME="${userName}"
+          USER_UID=$(id -u $\{USER_NAME\})
+
+          if [ ! -x "$\{HOMEBREW_PREFIX\}/bin/brew" ]; then
+            echo "Homebrew not found. Installing Homebrew..." >&2
+
+            # Create the Homebrew directory and set ownership to the user
+            mkdir -p $\{HOMEBREW_PREFIX\}
+            chown -R $\{USER_NAME\}:staff $\{HOMEBREW_PREFIX\}
+
+            # Run the installation script as the user
+            launchctl asuser $\{USER_NAME\} sudo -u $\{USER_NAME\} /bin/bash -c '
+              NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+              echo '\'eval "$($\{HOMEBREW_PREFIX\}/bin/brew shellenv)"'\' >> ~/.zprofile
+              eval "$($\{HOMEBREW_PREFIX\}/bin/brew shellenv)"
+            '
+
+            echo "Homebrew installation complete." >&2
+          else
+            echo "Homebrew is already installed." >&2
+          fi
+        '';
+      };
+
       # Source: https://gist.github.com/elliottminns/211ef645ebd484eb9a5228570bb60ec3
       system.activationScripts.applications.text = let
         env = pkgs.buildEnv {
@@ -421,7 +445,7 @@
         scripts
         inputs.nix-homebrew.darwinModules.nix-homebrew {
           nix-homebrew = {
-            enable = false;
+            enable = true;
             enableRosetta = true;
             user = "${userName}";
             autoMigrate = true;

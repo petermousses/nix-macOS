@@ -9,6 +9,11 @@
 
 conf_dir="~/.config/nix-darwin"
 
+echo "Installing homebrew"
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+eval "$(/opt/homebrew/bin/brew shellenv)"
+mkdir -p /opt/homebrew/Library/
+
 # Install nix-darwin. Source: https://github.com/LnL7/nix-darwin
 echo "Installing nix-darwin"
 nix-build https://github.com/LnL7/nix-darwin/archive/master.tar.gz -A installer
