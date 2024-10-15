@@ -39,8 +39,8 @@
       # programs.zsh = {
       #   enable = true;
       #   enableCompletion = true;
-      #   # enableAutosuggestions = true;
-      #   enableSyntaxHighlighting = true;
+      #   autosuggestion.enable = true;
+      #   syntaxHighlighting.enable = true;
       #   shellAliases = {
       #     rsch="cd /Users/${userName}/Documents/ASU_Local/Research";
       #     nav="cd /Users/${userName}/Documents/ASU_Local/3_2024_Fall";
@@ -83,9 +83,10 @@
         # vim
         neovim
         tmux
+        htop
 
         # Development tools
-        # coreutils
+        coreutils
         git
         openssh
         libmamba
@@ -130,80 +131,20 @@
         fonts = [
           # pkgs.fonts.monocraft
           (pkgs.nerdfonts.override {
-            fonts = [
-              pkgs.nerdfonts.FiraCode
-              pkgs.nerdfonts.Hack
-              pkgs.nerdfonts.JetBrainsMono
-              pkgs.nerdfonts.Mononoki
-              pkgs.nerdfonts.SourceCodePro
-              pkgs.nerdfonts.UbuntuMono
+            fonts = with pkgs; [
+              nerdfonts.FiraCode
+              nerdfonts.Hack
+              nerdfonts.JetBrainsMono
+              nerdfonts.Mononoki
+              nerdfonts.SourceCodePro
+              nerdfonts.UbuntuMono
             ];
           })
         ];
       };
     };
 
-    homebrewConfiguration = { pkgs, config, nix-homebrew, ...}: {
-      # https://github.com/zhaofengli/nix-homebrew
-      # inputs.nix-homebrew.darwinModules.nix-homebrew {
-        homebrew = {
-          # Your nix-homebrew configuration
-          enable = false;
-          homebrewPrefix = "/opt/homebrew";
-          user = "${userName}";
-          enableRosetta = true;
-          autoMigrate = true;
-          brews = [
-            "mas"
-          ];
-          casks = [
-            "bitwarden"
-            "librewolf" # how to use --no-quarantine?
-            "the-unarchiver"
-            # "google-chrome"
-            "spotify"
-            "signal"
-            "font-monocraft"
-            "avibrazil-rdm"
-            "unnaturalscrollwheels"
-            "utm"
-            "vlc"
-            "visual-studio-code"
-            "aldente"
-            "zoom"
-          ];
-          masApps = {
-            # "Tailscale" = "1475387142";
-            "MicrosoftOneNote" = 784801555;
-            "MicrosoftWord" = 462054704;
-            "MicrosoftExcel" = 462058435;
-            "MicrosoftPowerPoint" = 462062816;
-            # "WindowsAppAKARemoteDesktop" = "1295203466";
-            # "Xcode" = "497799835";
-            # "DevCleanerXcode" = "1388020431";
-            # "Notability" = "360593530";
-            # "KindleClassic" = "405399194";
-            # "CrystalFetchISO" = "6454431289";
-          };
-          onActivation = {
-            cleanup = "zap";
-            autoUpdate = true;
-            upgrade = true;
-          };
-          # Optional: Declarative tap management
-          # taps = {
-          #   "homebrew/homebrew-core" = homebrew-core;
-          #   "homebrew/homebrew-cask" = homebrew-cask;
-          # };
-
-          # Optional: Enable fully-declarative tap management
-          # With mutableTaps disabled, taps can no longer be added imperatively with `brew tap`.
-          # mutableTaps = false;
-        };
-      # }
-    };
-
-    homebrewConfiguration2 = { pkgs, config, lib, ...}: {
+    homebrewConfiguration = { pkgs, config, lib, ...}: {
       # https://github.com/zhaofengli/nix-homebrew
       homebrew = {
         enable = true;
@@ -216,15 +157,12 @@
         ];
         casks = [
           "bitwarden"
-          "librewolf" # how to use --no-quarantine?
-          # "the-unarchiver"
-          # "google-chrome"
-          # "spotify"
+          "librewolf"
+          "the-unarchiver"
           "signal"
           "font-monocraft"
           "avibrazil-rdm"
           "unnaturalscrollwheels"
-          # "vlc"
           "visual-studio-code"
           "aldente"
           "zoom"
@@ -360,40 +298,6 @@
         softwareupdate --install-rosetta --agree-to-license
       '';
 
-
-      system.activationScripts.installHomebrew =  {
-        text = ''
-          #!/usr/bin/env bash
-          set -euo pipefail
-
-          # Install Homebrew as user 'petermousses'
-          echo "Activation script installHomebrew is running as $(whoami)" >&2
-
-          HOMEBREW_PREFIX="/opt/homebrew"
-          USER_NAME="${userName}"
-          USER_UID=$(id -u $\{USER_NAME\})
-
-          if [ ! -x "$\{HOMEBREW_PREFIX\}/bin/brew" ]; then
-            echo "Homebrew not found. Installing Homebrew..." >&2
-
-            # Create the Homebrew directory and set ownership to the user
-            mkdir -p $\{HOMEBREW_PREFIX\}
-            chown -R $\{USER_NAME\}:staff $\{HOMEBREW_PREFIX\}
-
-            # Run the installation script as the user
-            launchctl asuser $\{USER_NAME\} sudo -u $\{USER_NAME\} /bin/bash -c '
-              NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-              echo '\'eval "$($\{HOMEBREW_PREFIX\}/bin/brew shellenv)"'\' >> ~/.zprofile
-              eval "$($\{HOMEBREW_PREFIX\}/bin/brew shellenv)"
-            '
-
-            echo "Homebrew installation complete." >&2
-          else
-            echo "Homebrew is already installed." >&2
-          fi
-        '';
-      };
-
       # Source: https://gist.github.com/elliottminns/211ef645ebd484eb9a5228570bb60ec3
       system.activationScripts.applications.text = let
         env = pkgs.buildEnv {
@@ -441,7 +345,7 @@
         systemConfiguration
         # fontsConfiguration
         systemPackagesConfiguration
-        homebrewConfiguration2
+        homebrewConfiguration
         scripts
         inputs.nix-homebrew.darwinModules.nix-homebrew {
           nix-homebrew = {
@@ -449,72 +353,17 @@
             enableRosetta = true;
             user = "${userName}";
             autoMigrate = true;
-            # Optional: Declarative tap management
+            # # Optional: Declarative tap management
             # taps = {
-            #   "homebrew/homebrew-core" = homebrew-core;
-            #   "homebrew/homebrew-cask" = homebrew-cask;
+            #   "homebrew/homebrew-core" = inputs.homebrew-core;
+            #   "homebrew/homebrew-cask" = inputs.homebrew-cask;
             # };
 
-            # Optional: Enable fully-declarative tap management
-            # With mutableTaps disabled, taps can no longer be added imperatively with `brew tap`.
+            # # Optional: Enable fully-declarative tap management
+            # # With mutableTaps disabled, taps can no longer be added imperatively with `brew tap`.
             # mutableTaps = false;
           };
         }
-        # inputs.nix-homebrew.darwinModules.nix-homebrew {
-        #   nix-homebrew = {
-        #     # Your nix-homebrew configuration
-        #     enable = true;
-        #     user = "${userName}";
-        #     enableRosetta = true;
-        #     autoMigrate = true;
-        #     brews = [
-        #       "mas"
-        #     ];
-        #     casks = [
-        #       "bitwarden"
-        #       "librewolf" # how to use --no-quarantine?
-        #       "the-unarchiver"
-        #       # "google-chrome"
-        #       # "spotify"
-        #       "signal"
-        #       "font-monocraft"
-        #       "avibrazil-rdm"
-        #       "unnaturalscrollwheels"
-        #       "utm"
-        #       "vlc"
-        #       "visual-studio-code"
-        #       "aldente"
-        #       "zoom"
-        #     ];
-        #     masApps = {
-        #       # "Tailscale" = "1475387142";
-        #       "MicrosoftOneNote" = 784801555;
-        #       "MicrosoftWord" = 462054704;
-        #       "MicrosoftExcel" = 462058435;
-        #       "MicrosoftPowerPoint" = 462062816;
-        #       # "WindowsAppAKARemoteDesktop" = "1295203466";
-        #       # "Xcode" = "497799835";
-        #       # "DevCleanerXcode" = "1388020431";
-        #       # "Notability" = "360593530";
-        #       # "KindleClassic" = "405399194";
-        #       # "CrystalFetchISO" = "6454431289";
-        #     };
-        #     onActivation = {
-        #       cleanup = "zap";
-        #       autoUpdate = true;
-        #       upgrade = true;
-        #     };
-        #     # Optional: Declarative tap management
-        #     # taps = {
-        #     #   "homebrew/homebrew-core" = homebrew-core;
-        #     #   "homebrew/homebrew-cask" = homebrew-cask;
-        #     # };
-
-        #     # Optional: Enable fully-declarative tap management
-        #     # With mutableTaps disabled, taps can no longer be added imperatively with `brew tap`.
-        #     # mutableTaps = false;
-        #   };
-        # }
         # inputs.home-manager.darwinModules.home-manager {
         #   home-manager = {
         #     useGlobalPkgs = true;
