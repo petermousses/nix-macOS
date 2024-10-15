@@ -26,6 +26,7 @@
     userName = "petermousses";
     hostName = "PeterBook-Air";
     systemType = "aarch64-darwin";
+
     generalConfiguration = { pkgs, config, ... }: {
       # Auto upgrade nix package and the daemon service.
       services.nix-daemon.enable = true;
@@ -35,7 +36,20 @@
       nix.settings.experimental-features = "nix-command flakes";
 
       # Create /etc/zshrc that loads the nix-darwin environment.
-      programs.zsh.enable = true;  # default shell on catalina
+      # programs.zsh = {
+      #   enable = true;
+      #   enableCompletion = true;
+      #   # enableAutosuggestions = true;
+      #   enableSyntaxHighlighting = true;
+      #   shellAliases = {
+      #     rsch="cd /Users/${userName}/Documents/ASU_Local/Research";
+      #     nav="cd /Users/${userName}/Documents/ASU_Local/3_2024_Fall";
+      #     ll="ls -lAG";
+      #     ls="ls --color=auto -F";
+      #     gcc="gcc -marm";
+      #     gpgZ="gpg -c --no-symkey-cache --cipher-algo AES256";
+      #   };
+      # };
       # programs.fish.enable = true;
       environment.shells = [ pkgs.bash pkgs.zsh ];
       environment.loginShell = pkgs.zsh;
@@ -54,6 +68,8 @@
     systemPackagesConfiguration = { pkgs, config, ...}: {
       nixpkgs.config = {
         allowUnfree = true;
+        # allowUnsupportedSystem = true;
+        # allowBroken = true;
       };
 
       # List packages installed in system profile. To search by name, run:
@@ -97,33 +113,36 @@
         pkgs.google-chrome
         # pkgs.bitwarden-desktop # no aarch64 support. Rosseta?
         # pkgs.bitwarden-cli
-        # pkgs.spotify
+        pkgs.spotify
         pkgs.tailscale
+        # pkgs.signal-desktop
       ];
+    };
 
-      # fonts = {
-      #   fontDir.enable = false;
-      #   # "monocraft" = pkgs.fonts.monocraft;
-      #   fonts = [
-      #     # pkgs.fonts.monocraft
-      #     (pkgs.nerdfonts.override {
-      #       fonts = [
-      #         pkgs.nerdfonts.FiraCode
-      #         pkgs.nerdfonts.Hack
-      #         pkgs.nerdfonts.JetBrainsMono
-      #         pkgs.nerdfonts.Mononoki
-      #         pkgs.nerdfonts.SourceCodePro
-      #         pkgs.nerdfonts.UbuntuMono
-      #       ];
-      #     })
-      #   ];
-      # };
+    fontsConfiguration = { pkgs, config, ...}: {
+      fonts = {
+        fontDir.enable = false;
+        # "monocraft" = pkgs.fonts.monocraft;
+        fonts = [
+          # pkgs.fonts.monocraft
+          (pkgs.nerdfonts.override {
+            fonts = [
+              pkgs.nerdfonts.FiraCode
+              pkgs.nerdfonts.Hack
+              pkgs.nerdfonts.JetBrainsMono
+              pkgs.nerdfonts.Mononoki
+              pkgs.nerdfonts.SourceCodePro
+              pkgs.nerdfonts.UbuntuMono
+            ];
+          })
+        ];
+      };
     };
 
     homebrewConfiguration = { pkgs, config, nix-homebrew, ...}: {
       # https://github.com/zhaofengli/nix-homebrew
       # inputs.nix-homebrew.darwinModules.nix-homebrew {
-        nix-homebrew = {
+        homebrew = {
           # Your nix-homebrew configuration
           enable = false;
           homebrewPrefix = "/opt/homebrew";
@@ -180,6 +199,49 @@
       # }
     };
 
+    homebrewConfiguration2 = { pkgs, config, nix-homebrew, ...}: {
+       # https://github.com/zhaofengli/nix-homebrew
+      homebrew = {
+        brews = [
+          "mas"
+        ];
+        casks = [
+          "bitwarden"
+          "librewolf" # how to use --no-quarantine?
+          "the-unarchiver"
+          # "google-chrome"
+          # "spotify"
+          "signal"
+          "font-monocraft"
+          "avibrazil-rdm"
+          "unnaturalscrollwheels"
+          "utm"
+          "vlc"
+          "visual-studio-code"
+          "aldente"
+          "zoom"
+        ];
+        masApps = {
+          # "Tailscale" = "1475387142";
+          "MicrosoftOneNote" = 784801555;
+          "MicrosoftWord" = 462054704;
+          "MicrosoftExcel" = 462058435;
+          "MicrosoftPowerPoint" = 462062816;
+          # "WindowsAppAKARemoteDesktop" = "1295203466";
+          # "Xcode" = "497799835";
+          # "DevCleanerXcode" = "1388020431";
+          # "Notability" = "360593530";
+          # "KindleClassic" = "405399194";
+          # "CrystalFetchISO" = "6454431289";
+        };
+        onActivation = {
+          cleanup = "zap";
+          autoUpdate = true;
+          upgrade = true;
+        };
+      };
+    };
+
     systemConfiguration = { pkgs, config, ... }: {
       # Discover settings here: https://daiderd.com/nix-darwin/manual/index.html
       # and here: https://mynixos.com/nix-darwin/options
@@ -210,6 +272,7 @@
           finder = {
             FXPreferredViewStyle = "clmv"; # Column view
             _FXSortFoldersFirst = true;
+            _FXShowPosixPathInTitle = true;
             AppleShowAllFiles = true;
             AppleShowAllExtensions = true;
             FXDefaultSearchScope = "SCcf"; # Search current folder
@@ -280,6 +343,23 @@
           };
         };
       };
+    };
+
+    scripts = { pkgs, config, ... }: {
+      system.activationScripts.installHomebrew.text = let
+        env = pkgs.buildEnv {
+          name = "homebrew";
+          paths = config.environment.systemPackages;
+          pathsToLink = "/opt/homebrew";
+        };
+      in
+        pkgs.lib.mkForce ''
+          # Install Homebrew
+          echo "installing Homebrew..." >&2
+          rm -rf /opt/homebrew
+          mkdir -p /opt
+          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        '';
 
       # Source: https://gist.github.com/elliottminns/211ef645ebd484eb9a5228570bb60ec3
       system.activationScripts.applications.text = let
@@ -326,12 +406,31 @@
       modules = [
         generalConfiguration
         systemConfiguration
+        # fontsConfiguration
         systemPackagesConfiguration
+        homebrewConfiguration2
+        scripts
+        inputs.nix-homebrew.darwinModules.nix-homebrew {
+          nix-homebrew = {
+            enable = false;
+            enableRosetta = true;
+            user = "${userName}";
+            autoMigrate = true;
+            # Optional: Declarative tap management
+            # taps = {
+            #   "homebrew/homebrew-core" = homebrew-core;
+            #   "homebrew/homebrew-cask" = homebrew-cask;
+            # };
+
+            # Optional: Enable fully-declarative tap management
+            # With mutableTaps disabled, taps can no longer be added imperatively with `brew tap`.
+            # mutableTaps = false;
+          };
+        }
         # inputs.nix-homebrew.darwinModules.nix-homebrew {
         #   nix-homebrew = {
         #     # Your nix-homebrew configuration
-        #     enable = false;
-        #     homebrewPrefix = "/opt/homebrew";
+        #     enable = true;
         #     user = "${userName}";
         #     enableRosetta = true;
         #     autoMigrate = true;
@@ -343,7 +442,7 @@
         #       "librewolf" # how to use --no-quarantine?
         #       "the-unarchiver"
         #       # "google-chrome"
-        #       "spotify"
+        #       # "spotify"
         #       "signal"
         #       "font-monocraft"
         #       "avibrazil-rdm"
@@ -383,18 +482,94 @@
         #     # mutableTaps = false;
         #   };
         # }
+        # inputs.home-manager.darwinModules.home-manager {
+        #   home-manager = {
+        #     useGlobalPkgs = true;
+        #     useUserPackages = true;
+        #     users.${userName}.imports = [
+        #       ({pkgs, ...}: {
+
+        #         home.stateVersion = "23.05";  # Don't change this when changing package inputs
+        #         home.packages = [
+        #           # Terminal setup
+        #           pkgs.mkalias
+        #           pkgs.zsh
+        #           # pkgs.oh-my-zsh
+        #           # pkgs.bash
+        #           # pkgs.vim
+        #           pkgs.neovim
+        #           pkgs.tmux
+
+        #           # Development tools
+        #           # pkgs.coreutils
+        #           pkgs.git
+        #           pkgs.openssh
+        #           pkgs.libmamba
+        #           # pkgs.libgcc
+        #           pkgs.gradle
+        #           pkgs.jdk
+        #           pkgs.rustup
+        #           pkgs.qemu
+        #           pkgs.docker
+        #           pkgs.docker-compose
+        #           # pkgs.kubectl
+
+        #           # Other CLI tools
+        #           pkgs.yt-dlp
+        #           pkgs.neofetch
+        #           pkgs.cmatrix
+        #           pkgs.ffmpeg
+        #           # pkgs.wget
+        #           # pkgs.curl
+        #           # pkgs.ocaml
+
+        #           # GUI applications
+        #           pkgs.obsidian
+        #           # pkgs.librewolf # no aarch64 support
+        #           pkgs.google-chrome
+        #           # pkgs.bitwarden-desktop # no aarch64 support. Rosseta?
+        #           # pkgs.bitwarden-cli
+        #           # pkgs.spotify
+        #           pkgs.tailscale
+        #         ];
+        #         home.sessionVariables = {
+        #           PAGER = "less";
+        #           EDITOR = "nvim";
+        #           CLICOLOR = 1;
+        #           # VISUAL = "nvim";
+        #           # TERM = "xterm-256color";
+        #         };
+        #         programs.git.enable = true;
+        #         programs.zsh = {
+        #           enable = true;
+        #           enableCompletion = true;
+        #           autosuggestion.enable = true;
+        #           syntaxHighlighting.enable = true;
+        #           shellAliases = {
+        #             rsch="cd /Users/${userName}/Documents/ASU_Local/Research";
+        #             nav="cd /Users/${userName}/Documents/ASU_Local/3_2024_Fall";
+        #             ll="ls -lAG";
+        #             ls="ls --color=auto -F";
+        #             gcc="gcc -marm";
+        #             gpgZ="gpg -c --no-symkey-cache --cipher-algo AES256";
+        #           };
+        #         };
+        #       })
+        #     ];
+        #   };
+        # }
       ];
     };
 
-    homeConfigurations."${userName}" = inputs.home-manager.lib.homeManagerConfiguration {
-      pkgs = inputs.nixpkgs.legacyPackages."${systemType}";
-      homeDirectory = "/Users/${userName}";
-      stateVersion = "23.05";  # Adjust to your home-manager version
-      extraSpecialArgs = { inherit inputs; };
-      modules = [
-        ./home.nix  # Path to your home-manager configuration
-      ];
-    };
+    # homeConfigurations."${userName}" = inputs.home-manager.lib.homeManagerConfiguration {
+    #   pkgs = inputs.nixpkgs.legacyPackages."${systemType}";
+    #   homeDirectory = "/Users/${userName}";
+    #   stateVersion = "23.05";  # Adjust to your home-manager version
+    #   extraSpecialArgs = { inherit inputs; };
+    #   modules = [
+    #     ./home.nix  # Path to your home-manager configuration
+    #   ];
+    # };
 
     # Expose the package set, including overlays, for convenience.
     darwinPackages = inputs.self.darwinConfigurations."${hostName}".pkgs;
