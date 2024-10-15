@@ -74,6 +74,7 @@
 
       # List packages installed in system profile. To search by name, run:
       # $ nix-env -qaP | grep wget
+      # https://search.nixos.org/packages
       environment.systemPackages = with pkgs; [
         # Terminal setup
         mkalias zsh neovim tmux htop
@@ -347,82 +348,40 @@
             # mutableTaps = false;
           };
         }
-        # inputs.home-manager.darwinModules.home-manager {
-        #   home-manager = {
-        #     useGlobalPkgs = true;
-        #     useUserPackages = true;
-        #     users.${userName}.imports = [
-        #       ({pkgs, ...}: {
+        inputs.home-manager.darwinModules.home-manager {
+          home-manager = {
+            useGlobalPkgs = true;
+            useUserPackages = true;
+            users.${userName}.imports = [
+              ({pkgs, ...}: {
 
-        #         home.stateVersion = "23.05";  # Don't change this when changing package inputs
-        #         home.packages = [
-        #           # Terminal setup
-        #           pkgs.mkalias
-        #           pkgs.zsh
-        #           # pkgs.oh-my-zsh
-        #           # pkgs.bash
-        #           # pkgs.vim
-        #           pkgs.neovim
-        #           pkgs.tmux
-
-        #           # Development tools
-        #           # pkgs.coreutils
-        #           pkgs.git
-        #           pkgs.openssh
-        #           pkgs.libmamba
-        #           # pkgs.libgcc
-        #           pkgs.gradle
-        #           pkgs.jdk
-        #           pkgs.rustup
-        #           pkgs.qemu
-        #           pkgs.docker
-        #           pkgs.docker-compose
-        #           # pkgs.kubectl
-
-        #           # Other CLI tools
-        #           pkgs.yt-dlp
-        #           pkgs.neofetch
-        #           pkgs.cmatrix
-        #           pkgs.ffmpeg
-        #           # pkgs.wget
-        #           # pkgs.curl
-        #           # pkgs.ocaml
-
-        #           # GUI applications
-        #           pkgs.obsidian
-        #           # pkgs.librewolf # no aarch64 support
-        #           pkgs.google-chrome
-        #           # pkgs.bitwarden-desktop # no aarch64 support. Rosseta?
-        #           # pkgs.bitwarden-cli
-        #           # pkgs.spotify
-        #           pkgs.tailscale
-        #         ];
-        #         home.sessionVariables = {
-        #           PAGER = "less";
-        #           EDITOR = "nvim";
-        #           CLICOLOR = 1;
-        #           # VISUAL = "nvim";
-        #           # TERM = "xterm-256color";
-        #         };
-        #         programs.git.enable = true;
-        #         programs.zsh = {
-        #           enable = true;
-        #           enableCompletion = true;
-        #           autosuggestion.enable = true;
-        #           syntaxHighlighting.enable = true;
-        #           shellAliases = {
-        #             rsch="cd /Users/${userName}/Documents/ASU_Local/Research";
-        #             nav="cd /Users/${userName}/Documents/ASU_Local/3_2024_Fall";
-        #             ll="ls -lAG";
-        #             ls="ls --color=auto -F";
-        #             gcc="gcc -marm";
-        #             gpgZ="gpg -c --no-symkey-cache --cipher-algo AES256";
-        #           };
-        #         };
-        #       })
-        #     ];
-        #   };
-        # }
+                home.stateVersion = "23.05";  # Don't change this when changing package inputs
+                home.sessionVariables = {
+                  PAGER = "less";
+                  EDITOR = "nvim";
+                  CLICOLOR = 1;
+                  # VISUAL = "nvim";
+                  # TERM = "xterm-256color";
+                };
+                programs.git.enable = true;
+                programs.zsh = {
+                  enable = true;
+                  enableCompletion = true;
+                  autosuggestion.enable = true;
+                  syntaxHighlighting.enable = true;
+                  shellAliases = {
+                    rsch="cd /Users/${userName}/Documents/ASU_Local/Research";
+                    nav="cd /Users/${userName}/Documents/ASU_Local/3_2024_Fall";
+                    ll="ls -lAG";
+                    ls="ls --color=auto -F";
+                    gcc="gcc -marm";
+                    gpgZ="gpg -c --no-symkey-cache --cipher-algo AES256";
+                  };
+                };
+              })
+            ];
+          };
+        }
       ];
     };
 
