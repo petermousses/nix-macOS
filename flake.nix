@@ -76,50 +76,32 @@
       # $ nix-env -qaP | grep wget
       environment.systemPackages = with pkgs; [
         # Terminal setup
-        mkalias
-        zsh
-        # oh-my-zsh
-        # bash
-        # vim
-        neovim
-        tmux
-        htop
-
+        mkalias zsh neovim tmux htop
+        # oh-my-zsh bash vim
+        
         # Development tools
-        coreutils
-        git
-        openssh
-        libmamba
-        # libgcc
-        gradle
-        jdk
-        rustup
-        qemu
-        docker
-        docker-compose
-        # kubectl
+        coreutils git openssh 
+        libmamba 
+        gradle jdk 
+        rustup 
+        qemu docker docker-compose
+        # libgcc kubectl ocaml
+
+        # Utilities
+        tree ffmpeg wget curl
 
         # Other CLI tools
         yt-dlp
         neofetch
-        tree
         cmatrix
-        ffmpeg
-        # wget
-        # curl
-        # ocaml
 
         # GUI applications
-        obsidian
+        obsidian google-chrome spotify utm vlc-bin-universal
         # librewolf # no aarch64 support
-        google-chrome
         # bitwarden-desktop # no aarch64 support. Rosseta?
         # bitwarden-cli
-        spotify
         # tailscale # Isn't shown in apps
         # signal-desktop
-        utm
-        vlc-bin-universal
         # unar # The Unarchiver # Isn't shown in apps
       ];
     };
@@ -156,6 +138,7 @@
           "mas"
         ];
         casks = [
+          "tailscale"
           "bitwarden"
           "librewolf"
           "the-unarchiver"
@@ -349,7 +332,7 @@
         scripts
         inputs.nix-homebrew.darwinModules.nix-homebrew {
           nix-homebrew = {
-            enable = true;
+            enable = false;
             enableRosetta = true;
             user = "${userName}";
             autoMigrate = true;
