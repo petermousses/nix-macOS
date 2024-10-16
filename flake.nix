@@ -73,7 +73,7 @@
       };
 
       # List packages installed in system profile. To search by name, run:
-      # $ nix-env -qaP | grep wget
+      # $ nix-env -qaP | grep <package>
       # https://search.nixos.org/packages
       environment.systemPackages = with pkgs; [
         # Terminal setup
@@ -82,7 +82,7 @@
         
         # Development tools
         coreutils git openssh 
-        libmamba libgcc 
+        libmamba #libgcc # libgcc should work but it doesn't
         gradle jdk nodejs_22 pkg-config
         rustup 
         qemu docker docker-compose
