@@ -82,11 +82,11 @@
         
         # Development tools
         coreutils git openssh 
-        libmamba 
-        gradle jdk 
+        libmamba libgcc 
+        gradle jdk nodejs_22 pkg-config
         rustup 
         qemu docker docker-compose
-        # libgcc kubectl ocaml
+        # kubectl ocaml
 
         # Utilities
         tree ffmpeg wget curl
@@ -152,6 +152,7 @@
           "zoom"
         ];
         masApps = {
+          # "PerplexityAI" = 6714467650;
           # "Tailscale" = "1475387142";
           "MicrosoftOneNote" = 784801555;
           "MicrosoftWord" = 462054704;
