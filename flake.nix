@@ -26,6 +26,19 @@
     userName = "petermousses";
     hostName = "PeterBook-Air";
     systemType = "aarch64-darwin";
+    detect-system = { pkgs, ... }: {
+      shell = {
+        systemType = let
+          detectSystem = ''
+            echo "$(uname -m | sed 's/arm/aarch/')-$(uname -s | tr '[:upper:]' '[:lower:]')"
+          '';
+        in {
+          systemCommand = pkgs.runCommand "detect-system" {} ''
+            detectSystem
+          '';
+        };
+      };
+    };
 
     generalConfiguration = { pkgs, config, ... }: {
       # Auto upgrade nix package and the daemon service.
