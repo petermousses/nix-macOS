@@ -96,7 +96,7 @@
         # Development tools
         coreutils git openssh 
         libmamba #libgcc # libgcc should work but it doesn't
-        gradle jdk nodejs_22 pkg-config
+        android-platform-tools gradle jdk nodejs_22 pkg-config
         rustup 
         qemu docker docker-compose
         # kubectl ocaml
