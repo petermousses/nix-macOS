@@ -267,6 +267,7 @@
 
               "/System/Applications/Calendar.app"
               "/System/Applications/Mail.app"
+              "/Applications/Microsoft Outlook.app"
 
               "/System/Applications/Utilities/Terminal.app"
               "/Applications/Visual Studio Code.app"
