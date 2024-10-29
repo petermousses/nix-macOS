@@ -171,6 +171,8 @@
           "MicrosoftWord" = 462054704;
           "MicrosoftExcel" = 462058435;
           "MicrosoftPowerPoint" = 462062816;
+          "MicrosoftOutlook" = 985367838;
+          # "Microsoft365" = 1450038993;
           # "WindowsAppAKARemoteDesktop" = "1295203466";
           # "Xcode" = "497799835";
           # "DevCleanerXcode" = "1388020431";
